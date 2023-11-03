@@ -127,7 +127,7 @@ def render(coord:[dict]) -> None:
         curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLACK)
         curses.init_pair(7, curses.COLOR_WHITE, curses.COLOR_BLACK)
 
-        # add update_dictionary function here (core part of game engine)
+        # add engine function / update_dictionary function here (core part of game engine)
 
         for cell in coord:
             x_coord:int = cell["coordinate"][0]
@@ -168,6 +168,11 @@ def render(coord:[dict]) -> None:
         
         curses.napms(10000) # waits few seconds without input
         curses.endwin() # exits curses window
+
+# runs every update loop
+# FUA: - implement the 3 engines for different types of objects, solid liquid and gaseous; maybe abstract into different functions?
+def engine(coord:[dict]) -> [dict]:
+    pass
 
 # event loop
 render(parse_file())
