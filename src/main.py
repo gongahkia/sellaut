@@ -3,9 +3,7 @@ import curses
 import os
 
 # basic info
-# - integrate curses CLI and integrate existing file_ui method into it
 # - screen size: [0,0] to [60,25], a 61 by 26 grid
-# - add colors to the screen
 # - implement interactions between elements
 # - implement solid dynamics (gravity), liquid dynamics (gravity and liquid fluidity) and gas dynamics
 # - functional programming
@@ -29,7 +27,7 @@ def file_ui() -> [str]:
             display += f"[{count}] | {file_name[0]}.{file_name[1]}\n"
             valid_file_name.append(f"{file_name[0]}.{file_name[1]}")
     while True:
-        print(display.rstrip(),end="")
+        print(display)
         user:str = input("File number: ")
         try:
             if int(user) - 1 > 1 or int(user) - 1 < len(file_name_array):
@@ -106,7 +104,9 @@ def debug(coord:[dict]) -> None:
     fhand.close()
 
 # incorporates curses module
-# FUA --> get the update function later to determine if there are no changes in state after 10 cycles, to terminate the program
+# might need to integrate update render loop here with a while loop
+# might need to integrate update dictionary loop here as well (core part of engine)
+# FUA --> get the check_changes function later to determine if there are no changes in state after 10 cycles, to terminate the program
 def render(coord:[dict]) -> None:
 
     # curses boilerplate
@@ -126,6 +126,8 @@ def render(coord:[dict]) -> None:
         curses.init_pair(5, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
         curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLACK)
         curses.init_pair(7, curses.COLOR_WHITE, curses.COLOR_BLACK)
+
+        # add update_dictionary function here (core part of game engine)
 
         for cell in coord:
             x_coord:int = cell["coordinate"][0]
@@ -161,6 +163,9 @@ def render(coord:[dict]) -> None:
                     print(f"Edge case 001 found.")
                     return None
         screen.refresh() # refreshes the screen once all cells have been added
+        
+        # add check_changes function here later
+        
         curses.napms(10000) # waits few seconds without input
         curses.endwin() # exits curses window
 
