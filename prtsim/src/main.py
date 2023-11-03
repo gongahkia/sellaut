@@ -8,6 +8,7 @@ import os
 # - implement solid dynamics (gravity), liquid dynamics (gravity and liquid fluidity) and gas dynamics
 # - functional programming
 # - data structures
+# - separate the file_ui function and other resuable functions to a lower file directory for other cellular automata projects in this repo
 
 # cell state represented by a dictionary
 cell_data:dict = {
