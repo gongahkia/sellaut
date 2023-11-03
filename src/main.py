@@ -5,9 +5,11 @@ import os
 # basic info
 # - integrate curses CLI and integrate existing file_ui method into it
 # - screen size: [0,0] to [60,25]
-# - FUA: add colors to the screen
-#      : implement interactions between elements
-#      : implement solid dynamics (gravity), liquid dynamics (gravity and liquid fluidity) and gas dynamics
+# - add colors to the screen
+# - implement interactions between elements
+# - implement solid dynamics (gravity), liquid dynamics (gravity and liquid fluidity) and gas dynamics
+# - functional programming
+# - data structures
 
 # cell state represented by a dictionary
 cell_data:dict = {
@@ -40,7 +42,7 @@ def file_ui() -> [str]:
     for line in fhand:
         if len(line.rstrip()) != 60:
             return None
-        print(line, end="")
+        # print(line, end="")
         buffer.append(line.rstrip())
     fhand.close()
     if len(buffer) != 25:
@@ -48,7 +50,6 @@ def file_ui() -> [str]:
     return buffer
 
 # parse text files 
-# FUA: - implement logic for this
 def parse_file() -> [dict]:
     buffer:[str] = file_ui()
     if not buffer:
@@ -59,7 +60,7 @@ def parse_file() -> [dict]:
     for y in range(len(buffer)):
         for x in range(len(buffer[y])):
             cell_data:dict = {
-                                "element": "air",
+                                "element": "",
                                 "coordinate": [0,0]
                             }
             match buffer[y][x]:
@@ -92,6 +93,11 @@ def parse_file() -> [dict]:
                     print(f"Unknown character found in line {y + 1} --> [{buffer[y][x]}]")
                     return None
             coord.append(cell_data)
+    return coord
+
+# debug information
+# FUA - add details to this debug function that prints out the coordinates to a dot file called .log or somthing 
+def debug([dict]) -> None:
 
 # event loop
-parse_file()
+print(parse_file())

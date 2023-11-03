@@ -4,3 +4,4 @@
 
 * particle simulation
 * snake movement 
+* terrain generation
