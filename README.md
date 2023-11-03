@@ -2,6 +2,6 @@
 
 `worlds in python`
 
-* particle simulation
+* [particle simulation](prtsim/src)
 * snake movement 
 * terrain generation
