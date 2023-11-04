@@ -2,11 +2,11 @@
 
 `worlds in python`
 
-* [particle simulation](prtsim/src)
-* [brian's brain](brbr/src)
-* [forest fire model](frfrmd/src)
-* [epidemic modelling](epdm/src)
-* [traffic flow modelling](trfl/src)
-* [sunlight in kowloon walled city](sikc/src)
+* [particle simulation](prtsim)
+* [brian's brain](brbr)
+* [forest fire model](frfrmd)
+* [epidemic modelling](epdm)
+* [traffic flow modelling](trfl)
+* [sunlight in kowloon walled city](sikc)
 * snake movement 
 * terrain generation
