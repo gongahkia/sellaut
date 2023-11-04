@@ -3,6 +3,9 @@
 `worlds in python`
 
 * [particle simulation](prtsim)
+
+![](asset/eg1.gif)
+
 * [brian's brain](brbr)
 * [forest fire model](frfrmd)
 * [epidemic modelling](epdm)
