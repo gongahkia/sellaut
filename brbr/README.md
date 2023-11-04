@@ -1,0 +1,1 @@
+implement rules based on [this](https://conwaylife.com/wiki/OCA:Brian%27s_Brain)

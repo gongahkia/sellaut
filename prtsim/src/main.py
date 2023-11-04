@@ -12,6 +12,9 @@ import os
 # - functional programming
 # - data structures
 # - separate the file_ui function and other resuable functions to a lower file directory for other cellular automata projects in this repo
+# - legend
+#   - implemented ✅
+#   - not implemented ❌
 
 # cell state represented by a dictionary
 cell_data:dict = {
@@ -146,7 +149,7 @@ def render(coord:[dict]) -> None:
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(2))
                     case "oil_block": 
                         ascii_char = "*"
-                        screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(4))
+                        screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(1))
                     case "water_block": 
                         ascii_char = "≈"
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(6))
@@ -163,13 +166,11 @@ def render(coord:[dict]) -> None:
 
             # screen.erase() # erases the screen before new cells can be drawn
             screen.refresh() # refreshes the screen once all cells have been added
-            curses.napms(350) # waits few seconds without input
+            curses.napms(300) # waits few seconds without input
 
     curses.endwin() # exits curses window
 
 # runs every update loop
-# FUA --> implement the 3 engines for different types of objects, solid liquid and gaseous; maybe abstract into different functions?
-#     --> implement the checks necessary after I've written the function to restructure data
 def engine(coord:[dict]) -> [dict]:
 
     coord_dict = re_list_dict(coord)
@@ -180,7 +181,7 @@ def engine(coord:[dict]) -> [dict]:
         x_coord:int = pair[0]
         y_coord:int = pair[1]
 
-    # structure of engine change 
+    # structure of engine
         # 1. Effect to be implemented
         # 2. Calculate estimated change in block position
         # 3. New position of existing block
@@ -191,48 +192,52 @@ def engine(coord:[dict]) -> [dict]:
 
         match coord_dict[(x_coord,y_coord)]:
 
+            # ----------
+
             case "air_block": # FUA --> implement gas mechanics
+
                 if (x_coord,y_coord) not in final_coord_dict:
+
                     final_coord_dict[(x_coord,y_coord)] = "air_block"
 
-            case "falling_block": # FUA --> implement further collisions between this and OTHER objects
-                                  #     --> implement water physics later
+            # ----------
+
+            case "falling_block": # FUA --> implement water physics later
                                   #     --> implement gas mechanics
 
                 if (x_coord,y_coord) not in final_coord_dict:
 
-                # --> COLISSION & INTERACTION with all 6 block types
-
-                    # --> GRAVITY; block falls one
-                    # bounds check
+                    # GRAVITY; check the block below
                     if y_coord + 1 <= 25: 
 
-                        # AIR_BLOCK
+                        # AIR_BLOCK ✅
                         if coord_dict[(x_coord, y_coord + 1)] == "air_block":
                             final_coord_dict[(x_coord,y_coord+1)] = "falling_block"
                             final_coord_dict[(x_coord,y_coord)] = "air_block"
 
-                        # FLAMMABLE_BLOCK
+                        # FALLING_BLOCK ✅
                         elif coord_dict[(x_coord, y_coord + 1)] == "falling_block":
                             final_coord_dict[(x_coord,y_coord)] = "falling_block"
 
-                        # OIL_BLOCK
+                        # OIL_BLOCK ✅❌
                         elif coord_dict[(x_coord, y_coord + 1)] == "oil_block":
-                            pass
+                            final_coord_dict[(x_coord, y_coord + 1)] = "falling_block"
+                            final_coord_dict[(x_coord, y_coord)] = "oil_block"
 
-                        # WATER_BLOCK
+                        # WATER_BLOCK ✅❌
                         elif coord_dict[(x_coord, y_coord + 1)] == "water_block":
-                            pass
+                            final_coord_dict[(x_coord, y_coord + 1)] = "falling_block"
+                            final_coord_dict[(x_coord, y_coord)] = "water_block"
 
-                        # NON-FLAMMABLE_BLOCK
+                        # BUILDING_BLOCK ✅
                         elif coord_dict[(x_coord, y_coord + 1)] == "building_block":
                             final_coord_dict[(x_coord,y_coord)] = "falling_block"
 
-                        # EFFEREVESENCE_BLOCK
+                        # EFFEREVESENCE_BLOCK ❌
                         elif coord_dict[(x_coord, y_coord + 1)] == "effervesence_block":
                             pass
                     
-                    # block DOES NOT fall by one y position
+                    # GROUND FLOOR ✅
                     elif y_coord + 1 == 26:
                         final_coord_dict[(x_coord,y_coord)] = "falling_block"
 
@@ -241,25 +246,110 @@ def engine(coord:[dict]) -> [dict]:
                         print("Edge case 002 found.")
                         return None
                 
-            case "oil_block": # FUA --> implement logic
-                # 5. If block already in dictionary, don't alter it
-                if (x_coord,y_coord) not in final_coord_dict:
-                    final_coord_dict[(x_coord,y_coord)] = "oil_block"
+            # ----------
 
-            case "water_block": # FUA --> implement logic
-                # 5. If block already in dictionary, don't alter it
-                if (x_coord,y_coord) not in final_coord_dict:
-                    final_coord_dict[(x_coord,y_coord)] = "water_block"
+            case "oil_block": # FUA --> implement fluid dynamics
+                              #     --> implement gaseous dynamics
 
-            case "building_block": # FUA --> implement logic
-                # 5. If block already in dictionary, don't alter it
+                if (x_coord,y_coord) not in final_coord_dict:
+
+                    # GRAVITY; check the block below
+                    if y_coord + 1 <= 25: 
+
+                        # AIR_BLOCK ✅
+                        if coord_dict[(x_coord, y_coord + 1)] == "air_block":
+                            final_coord_dict[(x_coord,y_coord+1)] = "oil_block"
+                            final_coord_dict[(x_coord,y_coord)] = "air_block"
+
+                        # FALLING_BLOCK ✅❌
+                        elif coord_dict[(x_coord, y_coord + 1)] == "falling_block":
+                            final_coord_dict[(x_coord,y_coord)] = "oil_block"
+
+                        # OIL_BLOCK ✅❌
+                        elif coord_dict[(x_coord, y_coord + 1)] == "oil_block":
+                            final_coord_dict[(x_coord,y_coord)] = "oil_block"
+
+                        # WATER_BLOCK ✅❌
+                        elif coord_dict[(x_coord, y_coord + 1)] == "water_block":
+                            final_coord_dict[(x_coord,y_coord)] = "oil_block"
+
+                        # BUILDING_BLOCK ✅❌
+                        elif coord_dict[(x_coord, y_coord + 1)] == "building_block":
+                            final_coord_dict[(x_coord,y_coord)] = "oil_block"
+
+                        # EFFEREVESENCE_BLOCK ❌
+                        elif coord_dict[(x_coord, y_coord + 1)] == "effervesence_block":
+                            pass
+                    
+                    # GROUND FLOOR ✅
+                    elif y_coord + 1 == 26:
+                        final_coord_dict[(x_coord,y_coord)] = "oil_block"
+
+                    else:
+                        os.system("clear")
+                        print("Edge case 004 found.")
+                        return None
+
+            # ----------
+
+            case "water_block": # FUA --> implement fluid dynamics
+                                #     --> implement gaseous dynamics
+
+                if (x_coord,y_coord) not in final_coord_dict:
+
+                    # GRAVITY; check the block below
+                    if y_coord + 1 <= 25: 
+
+                        # AIR_BLOCK ✅
+                        if coord_dict[(x_coord, y_coord + 1)] == "air_block":
+                            final_coord_dict[(x_coord,y_coord+1)] = "water_block"
+                            final_coord_dict[(x_coord,y_coord)] = "air_block"
+
+                        # FALLING_BLOCK ✅❌
+                        elif coord_dict[(x_coord, y_coord + 1)] == "falling_block":
+                            final_coord_dict[(x_coord,y_coord)] = "water_block"
+
+                        # OIL_BLOCK ✅❌
+                        elif coord_dict[(x_coord, y_coord + 1)] == "oil_block":
+                            final_coord_dict[(x_coord,y_coord + 1)] = "water_block"
+                            final_coord_dict[(x_coord,y_coord)] = "oil_block"
+
+                        # WATER_BLOCK ✅❌
+                        elif coord_dict[(x_coord, y_coord + 1)] == "water_block":
+                            final_coord_dict[(x_coord,y_coord)] = "water_block"
+
+                        # BUILDING_BLOCK ✅❌
+                        elif coord_dict[(x_coord, y_coord + 1)] == "building_block":
+                            final_coord_dict[(x_coord,y_coord)] = "water_block"
+
+                        # EFFEREVESENCE_BLOCK ❌
+                        elif coord_dict[(x_coord, y_coord + 1)] == "effervesence_block":
+                            pass
+                    
+                    # GROUND FLOOR ✅
+                    elif y_coord + 1 == 26:
+                        final_coord_dict[(x_coord,y_coord)] = "water_block"
+
+                    else:
+                        os.system("clear")
+                        print("Edge case 003 found.")
+                        return None
+
+            # ----------
+
+            case "building_block": # ✅
                 if (x_coord,y_coord) not in final_coord_dict:
                     final_coord_dict[(x_coord,y_coord)] = "building_block"
 
-            case "effervesence_block": # FUA --> implement logic
-                # 5. If block already in dictionary, don't alter it
+            # ----------
+
+            case "effervesence_block": # FUA --> implement gaseous logic
+
                 if (x_coord,y_coord) not in final_coord_dict:
+
                     final_coord_dict[(x_coord,y_coord)] = "effervesence_block"
+
+            # ----------
 
             case _: 
                 os.system("clear")
@@ -310,4 +400,3 @@ def check_bounds(coordinate:(int)) -> bool:
 
 # event loop
 render(parse_file())
-# print(check_changes(re_dict_list(re_list_dict(parse_file()))))
