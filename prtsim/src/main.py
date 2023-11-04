@@ -6,7 +6,7 @@ import curses
 import os
 
 # basic info
-# - screen size: [0,0] to [60,25], a 61 by 26 grid
+# - screen size: (0,0) to (60,25), a 61 by 26 grid
 # - implement interactions between elements
 # - implement solid dynamics (gravity), liquid dynamics (gravity and liquid fluidity) and gas dynamics
 # - functional programming
@@ -29,6 +29,7 @@ def file_ui() -> [str]:
         if file_name[1] == "txt": # checks txt file
             display += f"[{count}] | {file_name[0]}.{file_name[1]}\n"
             valid_file_name.append(f"{file_name[0]}.{file_name[1]}")
+            count += 1
     while True:
         print(display)
         user:str = input("File number: ")
@@ -68,28 +69,22 @@ def parse_file() -> [dict]:
                 case ".": # air block
                     cell_data["element"] = "air_block"
                     cell_data["coordinate"] = (x,y)
-                case "$": # flammable block --> set on fire by fire, dissapears upon combustion leaving soot, doused by water, affected by solid dynamics
-                    cell_data["element"] = "flammable_block"
+                case "$": # falling block
+                    cell_data["element"] = "falling_block"
                     cell_data["coordinate"] = (x,y)
-                case "*": # oil block --> surface set on fire by water, top layer evaporates and produces effervesence, doused by water, affected by liquid dynamics
+                case "*": # oil block 
                     cell_data["element"] = "oil_block"
                     cell_data["coordinate"] = (x,y)
-                case "^": # fire block --> doused by water
-                    cell_data["element"] = "fire_block"
-                    cell_data["coordinate"] = (x,y)
-                case "~": # water block --> affected by liquid dynamics, puts out fire at no cost to itself
+                case "~": # water block 
                     cell_data["element"] = "water_block"
                     cell_data["coordinate"] = (x,y)
-                case "#": # non-flammable block --> not affected by solid dynamics, inert
-                    cell_data["element"] = "non-flammable_block"
+                case "#": # building block 
+                    cell_data["element"] = "building_block"
                     cell_data["coordinate"] = (x,y)
-                case "_": # soot block --> affected by solid dynamics
-                    cell_data["element"] = "soot_block"
-                    cell_data["coordinate"] = (x,y)
-                case "%": # effervesence block --> affected by gas dynamics
+                case "%": # effervesence block 
                     cell_data["element"] = "effervesence_block"
                     cell_data["coordinate"] = (x,y)
-                case _: # edge case --> this shouldn't exist
+                case _: # edge case 
                     os.system("clear")
                     print(f"Unknown character found in line {y + 1} --> [{buffer[y][x]}]")
                     return None
@@ -146,24 +141,18 @@ def render(coord:[dict]) -> None:
                     case "air_block":
                         ascii_char = "."
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(7))
-                    case "flammable_block": 
+                    case "falling_block": 
                         ascii_char = "$"
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(2))
                     case "oil_block": 
                         ascii_char = "*"
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(4))
-                    case "fire_block": 
-                        ascii_char = "^"
-                        screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(1))
                     case "water_block": 
                         ascii_char = "≈"
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(6))
-                    case "non-flammable_block": 
+                    case "building_block": 
                         ascii_char = "#"
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(3))
-                    case "soot_block": 
-                        ascii_char = "_"
-                        screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(5))
                     case "effervesence_block": 
                         ascii_char = "%"
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(7))
@@ -206,87 +195,66 @@ def engine(coord:[dict]) -> [dict]:
                 if (x_coord,y_coord) not in final_coord_dict:
                     final_coord_dict[(x_coord,y_coord)] = "air_block"
 
-            case "flammable_block": # FUA --> implement further collisions between this and OTHER objects
-                                    #     --> implement fire mechanics
-                                    #     --> implement water physics later
-                                    #     --> implement gas mechanics
+            case "falling_block": # FUA --> implement further collisions between this and OTHER objects
+                                  #     --> implement water physics later
+                                  #     --> implement gas mechanics
 
                 if (x_coord,y_coord) not in final_coord_dict:
 
-                # --> GRAVITY
-                # --> COLISSION & INTERACTION with all 8 block types
+                # --> COLISSION & INTERACTION with all 6 block types
 
+                    # --> GRAVITY; block falls one
                     # bounds check
                     if y_coord + 1 <= 25: 
 
                         # AIR_BLOCK
                         if coord_dict[(x_coord, y_coord + 1)] == "air_block":
-                            final_coord_dict[(x_coord,y_coord+1)] = "flammable_block"
+                            final_coord_dict[(x_coord,y_coord+1)] = "falling_block"
                             final_coord_dict[(x_coord,y_coord)] = "air_block"
 
                         # FLAMMABLE_BLOCK
-                        elif coord_dict[(x_coord, y_coord + 1)] == "flammable_block":
-                            final_coord_dict[(x_coord,y_coord)] = "flammable_block"
+                        elif coord_dict[(x_coord, y_coord + 1)] == "falling_block":
+                            final_coord_dict[(x_coord,y_coord)] = "falling_block"
 
                         # OIL_BLOCK
                         elif coord_dict[(x_coord, y_coord + 1)] == "oil_block":
                             pass
-
-                        # FIRE_BLOCK
-                        elif coord_dict[(x_coord, y_coord + 1)] == "fire_block":
-                            final_coord_dict[(x_coord,y_coord+1)] = "fire_block"
-                            final_coord_dict[(x_coord,y_coord)] = "air_block"
 
                         # WATER_BLOCK
                         elif coord_dict[(x_coord, y_coord + 1)] == "water_block":
                             pass
 
                         # NON-FLAMMABLE_BLOCK
-                        elif coord_dict[(x_coord, y_coord + 1)] == "non-flammable_block":
-                            final_coord_dict[(x_coord,y_coord)] = "flammable_block"
-
-                        # SOOT_BLOCK
-                        elif coord_dict[(x_coord, y_coord + 1)] == "soot_block":
-                            final_coord_dict[(x_coord,y_coord+1)] = "flammable_block"
-                            final_coord_dict[(x_coord,y_coord)] = "air_block"
+                        elif coord_dict[(x_coord, y_coord + 1)] == "building_block":
+                            final_coord_dict[(x_coord,y_coord)] = "falling_block"
 
                         # EFFEREVESENCE_BLOCK
                         elif coord_dict[(x_coord, y_coord + 1)] == "effervesence_block":
                             pass
-
+                    
+                    # block DOES NOT fall by one y position
                     elif y_coord + 1 == 26:
-                        final_coord_dict[(x_coord,y_coord)] = "flammable_block"
+                        final_coord_dict[(x_coord,y_coord)] = "falling_block"
 
                     else:
                         os.system("clear")
                         print("Edge case 002 found.")
                         return None
                 
-                        
             case "oil_block": # FUA --> implement logic
                 # 5. If block already in dictionary, don't alter it
                 if (x_coord,y_coord) not in final_coord_dict:
                     final_coord_dict[(x_coord,y_coord)] = "oil_block"
-
-            case "fire_block": # FUA --> implement logic
-                # 5. If block already in dictionary, don't alter it
-                if (x_coord,y_coord) not in final_coord_dict:
-                    final_coord_dict[(x_coord,y_coord)] = "fire_block"
 
             case "water_block": # FUA --> implement logic
                 # 5. If block already in dictionary, don't alter it
                 if (x_coord,y_coord) not in final_coord_dict:
                     final_coord_dict[(x_coord,y_coord)] = "water_block"
 
-            case "non-flammable_block": # FUA --> implement logic
+            case "building_block": # FUA --> implement logic
                 # 5. If block already in dictionary, don't alter it
                 if (x_coord,y_coord) not in final_coord_dict:
-                    final_coord_dict[(x_coord,y_coord)] = "non-flammable_block"
-
-            case "soot_block": # FUA --> implement logic
-                # 5. If block already in dictionary, don't alter it
-                if (x_coord,y_coord) not in final_coord_dict:
-                    final_coord_dict[(x_coord,y_coord)] = "soot_block"
+                    final_coord_dict[(x_coord,y_coord)] = "building_block"
 
             case "effervesence_block": # FUA --> implement logic
                 # 5. If block already in dictionary, don't alter it
@@ -330,6 +298,15 @@ def check_changes(coord:[dict]) -> bool:
         return False
     else:
         return True
+
+# checks whether a given coordinate is within the bounds of (0,0) and (60,25)
+def check_bounds(coordinate:(int)) -> bool:
+    x_coord:int = coordinate[0]
+    y_coord:int = coordinate[1]
+    if x_coord >= 0 and x_coord <= 60 and y_coord >= 0 and y_coord <= 25:
+        return True
+    else:
+        return False
 
 # event loop
 render(parse_file())
