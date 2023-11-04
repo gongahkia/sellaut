@@ -169,12 +169,12 @@ def render(coord:[dict]) -> None:
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(7))
                     case _: 
                         os.system("clear")
-                        print(f"Edge case 001 found.")
+                        print("Edge case 001 found.")
                         return None
 
             # screen.erase() # erases the screen before new cells can be drawn
             screen.refresh() # refreshes the screen once all cells have been added
-            curses.napms(1000) # waits few seconds without input
+            curses.napms(450) # waits few seconds without input
 
     curses.endwin() # exits curses window
 
@@ -202,50 +202,100 @@ def engine(coord:[dict]) -> [dict]:
 
         match coord_dict[(x_coord,y_coord)]:
 
-            case "air_block": # do nothing
+            case "air_block": # FUA --> implement gas mechanics
                 if (x_coord,y_coord) not in final_coord_dict:
                     final_coord_dict[(x_coord,y_coord)] = "air_block"
-                else:
-                    pass
 
             case "flammable_block": # FUA --> implement further collisions between this and OTHER objects
+                                    #     --> implement fire mechanics
+                                    #     --> implement water physics later
+                                    #     --> implement gas mechanics
 
                 if (x_coord,y_coord) not in final_coord_dict:
-                    # 1. GRAVITY
-                    if y_coord + 1 <= 25: 
-                        # 2. Calculate estimated change in block position
-                        # 3. New position of existing block
-                        final_coord_dict[(x_coord,y_coord+1)] = "flammable_block"
-                        # 4. New element at existing position
-                        final_coord_dict[(x_coord,y_coord)] = "air_block"
 
+                # --> GRAVITY
+                # --> COLISSION & INTERACTION with all 8 block types
+
+                    # bounds check
+                    if y_coord + 1 <= 25: 
+
+                        # AIR_BLOCK
+                        if coord_dict[(x_coord, y_coord + 1)] == "air_block":
+                            final_coord_dict[(x_coord,y_coord+1)] = "flammable_block"
+                            final_coord_dict[(x_coord,y_coord)] = "air_block"
+
+                        # FLAMMABLE_BLOCK
+                        elif coord_dict[(x_coord, y_coord + 1)] == "flammable_block":
+                            final_coord_dict[(x_coord,y_coord)] = "flammable_block"
+
+                        # OIL_BLOCK
+                        elif coord_dict[(x_coord, y_coord + 1)] == "oil_block":
+                            pass
+
+                        # FIRE_BLOCK
+                        elif coord_dict[(x_coord, y_coord + 1)] == "fire_block":
+                            final_coord_dict[(x_coord,y_coord+1)] = "fire_block"
+                            final_coord_dict[(x_coord,y_coord)] = "air_block"
+
+                        # WATER_BLOCK
+                        elif coord_dict[(x_coord, y_coord + 1)] == "water_block":
+                            pass
+
+                        # NON-FLAMMABLE_BLOCK
+                        elif coord_dict[(x_coord, y_coord + 1)] == "non-flammable_block":
+                            final_coord_dict[(x_coord,y_coord)] = "flammable_block"
+
+                        # SOOT_BLOCK
+                        elif coord_dict[(x_coord, y_coord + 1)] == "soot_block":
+                            final_coord_dict[(x_coord,y_coord+1)] = "flammable_block"
+                            final_coord_dict[(x_coord,y_coord)] = "air_block"
+
+                        # EFFEREVESENCE_BLOCK
+                        elif coord_dict[(x_coord, y_coord + 1)] == "effervesence_block":
+                            pass
+
+                    elif y_coord + 1 == 26:
+                        final_coord_dict[(x_coord,y_coord)] = "flammable_block"
+
+                    else:
+                        os.system("clear")
+                        print("Edge case 002 found.")
+                        return None
+                
+                        
             case "oil_block": # FUA --> implement logic
+                # 5. If block already in dictionary, don't alter it
                 if (x_coord,y_coord) not in final_coord_dict:
                     final_coord_dict[(x_coord,y_coord)] = "oil_block"
 
             case "fire_block": # FUA --> implement logic
+                # 5. If block already in dictionary, don't alter it
                 if (x_coord,y_coord) not in final_coord_dict:
                     final_coord_dict[(x_coord,y_coord)] = "fire_block"
 
             case "water_block": # FUA --> implement logic
+                # 5. If block already in dictionary, don't alter it
                 if (x_coord,y_coord) not in final_coord_dict:
                     final_coord_dict[(x_coord,y_coord)] = "water_block"
 
             case "non-flammable_block": # FUA --> implement logic
+                # 5. If block already in dictionary, don't alter it
                 if (x_coord,y_coord) not in final_coord_dict:
                     final_coord_dict[(x_coord,y_coord)] = "non-flammable_block"
 
             case "soot_block": # FUA --> implement logic
+                # 5. If block already in dictionary, don't alter it
                 if (x_coord,y_coord) not in final_coord_dict:
                     final_coord_dict[(x_coord,y_coord)] = "soot_block"
 
             case "effervesence_block": # FUA --> implement logic
+                # 5. If block already in dictionary, don't alter it
                 if (x_coord,y_coord) not in final_coord_dict:
                     final_coord_dict[(x_coord,y_coord)] = "effervesence_block"
 
             case _: 
                 os.system("clear")
-                print(f"Edge case 002 found.")
+                print("Edge case 002 found.")
                 return None
 
     return re_dict_list(final_coord_dict)
