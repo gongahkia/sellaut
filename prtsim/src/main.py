@@ -163,7 +163,7 @@ def render(coord:[dict]) -> None:
 
             # screen.erase() # erases the screen before new cells can be drawn
             screen.refresh() # refreshes the screen once all cells have been added
-            curses.napms(450) # waits few seconds without input
+            curses.napms(350) # waits few seconds without input
 
     curses.endwin() # exits curses window
 
