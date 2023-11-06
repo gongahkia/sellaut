@@ -4,4 +4,4 @@
 | on | `#` | turns to dying |
 | dying | `*` | turns off |
 
-> Rules also available [here](https://conwaylife.com/wiki/OCA:Brian%27s_Brain).
+> Rules available [here](https://conwaylife.com/wiki/OCA:Brian%27s_Brain).

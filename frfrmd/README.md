@@ -1,4 +1,7 @@
-implement rules based on the following
-* [this](https://itp.uni-frankfurt.de/~gros/StudentProjects/Projects_2020/projekt_lars_dingelAdein/)
-* [this2](https://github.com/drs5ma/forestfire)
-* [this3](https://dev.to/triplebyte/how-fire-spreads-mathematical-models-and-simulators-395c)
+| state | character | interaction |
+| :---: | :---: | :---: |
+| empty | `.` | has a chance every iteration of becoming a tree at probability *p* |
+| tree | `%` | becomes a fire cell if 1 or more neighbours is fire OR if 2 neighbours, ignites with probability *f* |
+| fire | `^` | becomes empty cell |
+
+> Rules available [here](https://dev.to/triplebyte/how-fire-spreads-mathematical-models-and-simulators-395c).

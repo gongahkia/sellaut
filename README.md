@@ -11,6 +11,9 @@
 ![](asset/eg2.gif)
 
 * [forest fire model](frfrmd)
+
+![](asset/eg3.gif)
+
 * [epidemic modelling](epdm)
 * [traffic flow modelling](trfl)
 * [sunlight in kowloon walled city](sikc)

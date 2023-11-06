@@ -4,6 +4,7 @@
 # imports
 import curses
 import os
+import random
 
 # basic info
 # - screen size: (0,0) to (60,25), a 61 by 26 grid
@@ -62,18 +63,18 @@ def parse_file() -> [dict]:
     for y in range(len(buffer)):
         for x in range(len(buffer[y])):
             cell_data:dict = {
-                                "state": "off",
+                                "state": "empty",
                                 "coordinate": (0,0)
                             }
             match buffer[y][x]:
-                case ".": # off state; ready
-                    cell_data["state"] = "off"
+                case ".": # empty state
+                    cell_data["state"] = "empty"
                     cell_data["coordinate"] = (x,y)
-                case "#": # on state; firing
-                    cell_data["state"] = "on"
+                case "%": # tree state
+                    cell_data["state"] = "tree"
                     cell_data["coordinate"] = (x,y)
-                case "*": # dying state; refractory
-                    cell_data["state"] = "dying"
+                case "^": # fire state
+                    cell_data["state"] = "fire"
                     cell_data["coordinate"] = (x,y)
                 case _: # edge case 
                     os.system("clear")
@@ -123,14 +124,14 @@ def render(coord:[dict]) -> None:
                 ascii_char:str = ""
 
                 match cell["state"]:
-                    case "off":
+                    case "empty":
                         ascii_char = "."
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(7))
-                    case "on":
-                        ascii_char = "#"
-                        screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(3))
-                    case "dying":
-                        ascii_char = "*"
+                    case "tree":
+                        ascii_char = "%"
+                        screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(2))
+                    case "fire":
+                        ascii_char = "^"
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(1))
                     case _: 
                         os.system("clear")
@@ -156,21 +157,28 @@ def engine(coord:[dict]) -> [dict]:
 
         match coord_dict[(x_coord,y_coord)]:
 
-            case "off": 
-                num_on:int = moore_neighborhood_count(coord,x_coord,y_coord)["on"]
+            case "empty": 
                 if (x_coord,y_coord) not in final_coord_dict:
-                    if num_on == 2:
-                        final_coord_dict[(x_coord,y_coord)] = "on"
+                    if probability_gen(0.45): # can alter this weighted probability
+                        final_coord_dict[(x_coord,y_coord)] = "tree"
                     else:
-                        final_coord_dict[(x_coord,y_coord)] = "off"
+                        final_coord_dict[(x_coord,y_coord)] = "empty"
 
-            case "on": 
+            case "tree": 
+                num_fire:int = moore_neighborhood_count(coord,x_coord,y_coord)["fire"]
+                num_tree:int = moore_neighborhood_count(coord,x_coord,y_coord)["tree"]
                 if (x_coord,y_coord) not in final_coord_dict:
-                    final_coord_dict[(x_coord,y_coord)] = "dying"
+                    if num_fire >= 1:
+                        final_coord_dict[(x_coord,y_coord)] = "fire"
+                    else:
+                        if probability_gen(): # can alter this weighted probability
+                            final_coord_dict[(x_coord,y_coord)] = "fire"
+                        else:
+                            final_coord_dict[(x_coord,y_coord)] = "tree"
 
-            case "dying": 
+            case "fire": 
                 if (x_coord,y_coord) not in final_coord_dict:
-                    final_coord_dict[(x_coord,y_coord)] = "off"
+                    final_coord_dict[(x_coord,y_coord)] = "empty"
 
             case _: 
                 os.system("clear")
@@ -222,9 +230,9 @@ def moore_neighborhood_count(coord,x_coord,y_coord) -> {str:int}:
     coord_dict:{(int):str} = re_list_dict(coord)
     count:dict = {}
     count:dict = {
-        "off":0,
-        "on":0,
-        "dying":0
+        "empty":0,
+        "tree":0,
+        "fire":0
     }
 
     if check_bounds((x_coord - 1, y_coord - 1)):
@@ -252,6 +260,10 @@ def moore_neighborhood_count(coord,x_coord,y_coord) -> {str:int}:
         count[coord_dict[(x_coord + 1, y_coord + 1)]] = count.get(coord_dict[(x_coord + 1, y_coord + 1)],0) + 1
 
     return count
+
+# by default, probability is 50 50
+def probability_gen(weight:float = 0.0) -> bool:
+    return random.randint(1,100) < ((1 + weight) * 5)
 
 # event loop
 render(parse_file())
