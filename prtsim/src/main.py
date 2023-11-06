@@ -131,9 +131,6 @@ def render(coord:[dict]) -> None:
 
             screen.erase()
 
-            # add engine function / update_dictionary function here (core part of game engine)
-            coord:[dict] = engine(coord)
-
             for cell in coord:
 
                 x_coord:int = cell["coordinate"][0]
@@ -163,6 +160,9 @@ def render(coord:[dict]) -> None:
                         os.system("clear")
                         print("Edge case 001 found.")
                         return None
+
+            # add engine function / update_dictionary function here (core part of game engine)
+            coord:[dict] = engine(coord)
 
             # screen.erase() # erases the screen before new cells can be drawn
             screen.refresh() # refreshes the screen once all cells have been added

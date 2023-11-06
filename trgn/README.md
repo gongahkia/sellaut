@@ -1,0 +1,2 @@
+* define rules for cellular automata
+* implement rules possibly according to [this](https://youtu.be/slTEz6555Ts?si=3pRYNv0J8vHI4Tt-) and [this](ihttps://bronsonzgeb.com/index.php/2022/01/30/procedural-generation-with-cellular-automata/)

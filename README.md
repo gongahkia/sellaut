@@ -11,5 +11,5 @@
 * [epidemic modelling](epdm)
 * [traffic flow modelling](trfl)
 * [sunlight in kowloon walled city](sikc)
-* snake movement 
-* terrain generation
+* [snake movement](snek)
+* [terrain generation](trgn)
