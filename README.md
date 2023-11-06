@@ -7,6 +7,9 @@
 ![](asset/eg1.gif)
 
 * [brian's brain](brbr)
+
+![](asset/eg2.gif)
+
 * [forest fire model](frfrmd)
 * [epidemic modelling](epdm)
 * [traffic flow modelling](trfl)
