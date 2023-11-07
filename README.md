@@ -3,13 +3,7 @@
 `worlds in python`
 
 * [brian's brain](brbr)
-
-![](asset/eg1.gif)
-
 * [forest fire model](frfrmd)
-
-![](asset/eg2.gif)
-
 * [terrain generation](trgn)
 * [particle simulation](prtsim)
 * [epidemic modelling](epdm)
