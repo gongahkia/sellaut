@@ -7,12 +7,6 @@ import os
 
 # basic info
 # - screen size: (0,0) to (60,25), a 61 by 26 grid
-# - implement cellular automata rules
-# - functional programming
-# - data structures
-# - legend
-#   - implemented ✅
-#   - not implemented ❌
 
 cell_data:dict = {
                     "state": "off",
