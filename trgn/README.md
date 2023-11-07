@@ -8,6 +8,6 @@
 | tree | `%` | becomes fire if 1 or more fire cells in mn |
 | fire | `^` | becomes stone with probability *o*, else becomes land |
 
-> **vnn**: von neumann neighbourhood (4 surrounding cells)
-> **mn**: moore neighbourhood (8 surrounding cells)
-> **emn** : extended moore neighbourhood (24 surrounding cells)
+> **vnn**: von neumann neighbourhood (4 surrounding cells)  
+> **mn**: moore neighbourhood (8 surrounding cells)  
+> **emn** : extended moore neighbourhood (24 surrounding cells)  
