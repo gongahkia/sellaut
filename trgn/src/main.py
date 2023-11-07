@@ -273,8 +273,11 @@ def engine(coord:[dict]) -> [dict]:
 
                     num_village_emn:int = extended_moore_neighbourhood_count(coord,x_coord,y_coord)["village"]
                     num_tree_emn:int = extended_moore_neighbourhood_count(coord,x_coord,y_coord)["tree"]
+                    num_fire_vnn:int = von_neumann_neighbourhood_count(coord,x_coord,y_coord)["fire"]
 
                     if num_village_emn >= 1 and num_tree_emn == 0:
+                        final_coord_dict[(x_coord,y_coord)] = "fire"
+                    elif num_fire_vnn >= 1:
                         final_coord_dict[(x_coord,y_coord)] = "fire"
                     else:
                         final_coord_dict[(x_coord,y_coord)] = "village"
