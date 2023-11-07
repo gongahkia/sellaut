@@ -7,14 +7,7 @@ import os
 
 # basic info
 # - screen size: (0,0) to (60,25), a 61 by 26 grid
-# - implement interactions between elements
-# - implement solid dynamics (gravity), liquid dynamics (gravity and liquid fluidity) and gas dynamics
-# - functional programming
-# - data structures
-# - separate the file_ui function and other resuable functions to a lower file directory for other cellular automata projects in this repo
-# - legend
-#   - implemented ✅
-#   - not implemented ❌
+# - rewrite engine from the groundup as per dreamberd logic here https://youtu.be/2qfjJ-0ZeVM?si=tNxDguBQyBnWMotI that implements cellular automata like checks
 
 # cell state represented by a dictionary
 cell_data:dict = {
@@ -72,8 +65,8 @@ def parse_file() -> [dict]:
                 case ".": # air block
                     cell_data["element"] = "air_block"
                     cell_data["coordinate"] = (x,y)
-                case "$": # falling block
-                    cell_data["element"] = "falling_block"
+                case "$": # sand
+                    cell_data["element"] = "sand"
                     cell_data["coordinate"] = (x,y)
                 case "*": # oil block 
                     cell_data["element"] = "oil_block"
@@ -105,10 +98,8 @@ def debug(coord:[dict]) -> None:
     fhand.close()
 
 # incorporates curses module
-# FUA --> debug why the screen is not showing the changed code in line 173 but instead skips to final iteration, it has something to do with the logic in 184, probably need to make a shallow copy of coord dict and run based off that
 def render(coord:[dict]) -> None:
 
-    # curses boilerplate
     screen = curses.initscr()
     curses.cbreak()
     curses.noecho()
@@ -126,7 +117,6 @@ def render(coord:[dict]) -> None:
         curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLACK)
         curses.init_pair(7, curses.COLOR_WHITE, curses.COLOR_BLACK)
 
-        # add check_changes(coord) function here?
         while check_changes(coord):
 
             screen.erase()
@@ -141,9 +131,9 @@ def render(coord:[dict]) -> None:
                     case "air_block":
                         ascii_char = "."
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(7))
-                    case "falling_block": 
+                    case "sand": 
                         ascii_char = "$"
-                        screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(2))
+                        screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(3))
                     case "oil_block": 
                         ascii_char = "*"
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(1))
@@ -152,7 +142,7 @@ def render(coord:[dict]) -> None:
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(6))
                     case "building_block": 
                         ascii_char = "#"
-                        screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(3))
+                        screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(2))
                     case "effervesence_block": 
                         ascii_char = "%"
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(7))
@@ -161,12 +151,11 @@ def render(coord:[dict]) -> None:
                         print("Edge case 001 found.")
                         return None
 
-            # add engine function / update_dictionary function here (core part of game engine)
             coord:[dict] = engine(coord)
 
-            # screen.erase() # erases the screen before new cells can be drawn
-            screen.refresh() # refreshes the screen once all cells have been added
-            curses.napms(300) # waits few seconds without input
+            # screen.erase() 
+            screen.refresh() 
+            curses.napms(100)
 
     curses.endwin() # exits curses window
 
@@ -175,179 +164,58 @@ def engine(coord:[dict]) -> [dict]:
 
     coord_dict = re_list_dict(coord)
     final_coord_dict:{(int):str} = {}
-    # print(coord_dict)
 
     for pair in coord_dict:
         x_coord:int = pair[0]
         y_coord:int = pair[1]
 
-    # structure of engine
-        # 1. Effect to be implemented
-        # 2. Calculate estimated change in block position
-        # 3. New position of existing block
-        # 4. New element at existing position
-        # * Caveat --> x min;0 max;60
-        #          --> y min;0 max;25
-        # 5. Need to consider if block already in dictionary, don't alter it
-
         match coord_dict[(x_coord,y_coord)]:
 
-            # ----------
-
-            case "air_block": # FUA --> implement gas mechanics
+            case "air_block": 
 
                 if (x_coord,y_coord) not in final_coord_dict:
 
-                    final_coord_dict[(x_coord,y_coord)] = "air_block"
+                    pass
 
             # ----------
 
-            case "falling_block": # FUA --> implement water physics later
-                                  #     --> implement gas mechanics
+            case "sand": 
 
                 if (x_coord,y_coord) not in final_coord_dict:
 
-                    # GRAVITY; check the block below
-                    if y_coord + 1 <= 25: 
-
-                        # AIR_BLOCK ✅
-                        if coord_dict[(x_coord, y_coord + 1)] == "air_block":
-                            final_coord_dict[(x_coord,y_coord+1)] = "falling_block"
-                            final_coord_dict[(x_coord,y_coord)] = "air_block"
-
-                        # FALLING_BLOCK ✅
-                        elif coord_dict[(x_coord, y_coord + 1)] == "falling_block":
-                            final_coord_dict[(x_coord,y_coord)] = "falling_block"
-
-                        # OIL_BLOCK ✅❌
-                        elif coord_dict[(x_coord, y_coord + 1)] == "oil_block":
-                            final_coord_dict[(x_coord, y_coord + 1)] = "falling_block"
-                            final_coord_dict[(x_coord, y_coord)] = "oil_block"
-
-                        # WATER_BLOCK ✅❌
-                        elif coord_dict[(x_coord, y_coord + 1)] == "water_block":
-                            final_coord_dict[(x_coord, y_coord + 1)] = "falling_block"
-                            final_coord_dict[(x_coord, y_coord)] = "water_block"
-
-                        # BUILDING_BLOCK ✅
-                        elif coord_dict[(x_coord, y_coord + 1)] == "building_block":
-                            final_coord_dict[(x_coord,y_coord)] = "falling_block"
-
-                        # EFFEREVESENCE_BLOCK ❌
-                        elif coord_dict[(x_coord, y_coord + 1)] == "effervesence_block":
-                            pass
-                    
-                    # GROUND FLOOR ✅
-                    elif y_coord + 1 == 26:
-                        final_coord_dict[(x_coord,y_coord)] = "falling_block"
-
-                    else:
-                        os.system("clear")
-                        print("Edge case 002 found.")
-                        return None
+                    pass
                 
             # ----------
 
-            case "oil_block": # FUA --> implement fluid dynamics
-                              #     --> implement gaseous dynamics
+            case "oil_block": 
 
                 if (x_coord,y_coord) not in final_coord_dict:
 
-                    # GRAVITY; check the block below
-                    if y_coord + 1 <= 25: 
-
-                        # AIR_BLOCK ✅
-                        if coord_dict[(x_coord, y_coord + 1)] == "air_block":
-                            final_coord_dict[(x_coord,y_coord+1)] = "oil_block"
-                            final_coord_dict[(x_coord,y_coord)] = "air_block"
-
-                        # FALLING_BLOCK ✅❌
-                        elif coord_dict[(x_coord, y_coord + 1)] == "falling_block":
-                            final_coord_dict[(x_coord,y_coord)] = "oil_block"
-
-                        # OIL_BLOCK ✅❌
-                        elif coord_dict[(x_coord, y_coord + 1)] == "oil_block":
-                            final_coord_dict[(x_coord,y_coord)] = "oil_block"
-
-                        # WATER_BLOCK ✅❌
-                        elif coord_dict[(x_coord, y_coord + 1)] == "water_block":
-                            final_coord_dict[(x_coord,y_coord)] = "oil_block"
-
-                        # BUILDING_BLOCK ✅❌
-                        elif coord_dict[(x_coord, y_coord + 1)] == "building_block":
-                            final_coord_dict[(x_coord,y_coord)] = "oil_block"
-
-                        # EFFEREVESENCE_BLOCK ❌
-                        elif coord_dict[(x_coord, y_coord + 1)] == "effervesence_block":
-                            pass
-                    
-                    # GROUND FLOOR ✅
-                    elif y_coord + 1 == 26:
-                        final_coord_dict[(x_coord,y_coord)] = "oil_block"
-
-                    else:
-                        os.system("clear")
-                        print("Edge case 004 found.")
-                        return None
+                    pass
 
             # ----------
 
-            case "water_block": # FUA --> implement fluid dynamics
-                                #     --> implement gaseous dynamics
+            case "water_block": 
 
                 if (x_coord,y_coord) not in final_coord_dict:
 
-                    # GRAVITY; check the block below
-                    if y_coord + 1 <= 25: 
-
-                        # AIR_BLOCK ✅
-                        if coord_dict[(x_coord, y_coord + 1)] == "air_block":
-                            final_coord_dict[(x_coord,y_coord+1)] = "water_block"
-                            final_coord_dict[(x_coord,y_coord)] = "air_block"
-
-                        # FALLING_BLOCK ✅❌
-                        elif coord_dict[(x_coord, y_coord + 1)] == "falling_block":
-                            final_coord_dict[(x_coord,y_coord)] = "water_block"
-
-                        # OIL_BLOCK ✅❌
-                        elif coord_dict[(x_coord, y_coord + 1)] == "oil_block":
-                            final_coord_dict[(x_coord,y_coord + 1)] = "water_block"
-                            final_coord_dict[(x_coord,y_coord)] = "oil_block"
-
-                        # WATER_BLOCK ✅❌
-                        elif coord_dict[(x_coord, y_coord + 1)] == "water_block":
-                            final_coord_dict[(x_coord,y_coord)] = "water_block"
-
-                        # BUILDING_BLOCK ✅❌
-                        elif coord_dict[(x_coord, y_coord + 1)] == "building_block":
-                            final_coord_dict[(x_coord,y_coord)] = "water_block"
-
-                        # EFFEREVESENCE_BLOCK ❌
-                        elif coord_dict[(x_coord, y_coord + 1)] == "effervesence_block":
-                            pass
-                    
-                    # GROUND FLOOR ✅
-                    elif y_coord + 1 == 26:
-                        final_coord_dict[(x_coord,y_coord)] = "water_block"
-
-                    else:
-                        os.system("clear")
-                        print("Edge case 003 found.")
-                        return None
+                    pass
 
             # ----------
 
-            case "building_block": # ✅
+            case "building_block": 
+
                 if (x_coord,y_coord) not in final_coord_dict:
-                    final_coord_dict[(x_coord,y_coord)] = "building_block"
+
+                    pass
 
             # ----------
 
-            case "effervesence_block": # FUA --> implement gaseous logic
+            case "effervesence_block": 
 
                 if (x_coord,y_coord) not in final_coord_dict:
 
-                    final_coord_dict[(x_coord,y_coord)] = "effervesence_block"
+                    pass
 
             # ----------
 
@@ -361,9 +229,7 @@ def engine(coord:[dict]) -> [dict]:
 # restructures coord to coord_dict
 def re_list_dict(coord:[dict]) -> {(int):str}:
     coord_dict:dict = {}
-    # print(coord)
     for cell in coord:
-        # print(tuple(cell["coordinate"]))
         coord_dict[tuple(cell["coordinate"])] = coord_dict.get(tuple(cell["coordinate"]), "") + cell["element"]
     return coord_dict
 

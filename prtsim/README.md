@@ -1,7 +1,7 @@
 | element | character | interaction |
 | :---: | :---: | :---: |
 | air | `.` | inert, denser than effervesence |
-| falling block | `$` | affected by solid dynamics and gravity |
+| sand | `$` | affected by solid dynamics and gravity |
 | oil block | `*` | less dense than water, affected by fluid dynamics |
 | water block | `~` | denser than oil, affected by general fluid dynamics, displaced by other solid blocks, water douses fire |
 | building block | `#` | not affected by gravity |
