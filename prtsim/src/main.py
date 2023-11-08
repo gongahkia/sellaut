@@ -65,20 +65,14 @@ def parse_file() -> [dict]:
                 case ".": # air block
                     cell_data["element"] = "air_block"
                     cell_data["coordinate"] = (x,y)
-                case "$": # sand
-                    cell_data["element"] = "sand"
-                    cell_data["coordinate"] = (x,y)
-                case "*": # oil block 
-                    cell_data["element"] = "oil_block"
+                case "$": # sand block
+                    cell_data["element"] = "sand_block"
                     cell_data["coordinate"] = (x,y)
                 case "~": # water block 
                     cell_data["element"] = "water_block"
                     cell_data["coordinate"] = (x,y)
                 case "#": # building block 
                     cell_data["element"] = "building_block"
-                    cell_data["coordinate"] = (x,y)
-                case "%": # effervesence block 
-                    cell_data["element"] = "effervesence_block"
                     cell_data["coordinate"] = (x,y)
                 case _: # edge case 
                     os.system("clear")
@@ -131,21 +125,15 @@ def render(coord:[dict]) -> None:
                     case "air_block":
                         ascii_char = "."
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(7))
-                    case "sand": 
+                    case "sand_block": 
                         ascii_char = "$"
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(3))
-                    case "oil_block": 
-                        ascii_char = "*"
-                        screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(1))
                     case "water_block": 
                         ascii_char = "≈"
                         screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(6))
                     case "building_block": 
                         ascii_char = "#"
-                        screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(2))
-                    case "effervesence_block": 
-                        ascii_char = "%"
-                        screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(7))
+                        screen.addstr(y_coord, x_coord, ascii_char, curses.color_pair(5))
                     case _: 
                         os.system("clear")
                         print("Edge case 001 found.")
@@ -155,10 +143,11 @@ def render(coord:[dict]) -> None:
 
             # screen.erase() 
             screen.refresh() 
-            curses.napms(100)
+            curses.napms(150)
 
     curses.endwin() # exits curses window
 
+# UPDATE THIS
 # runs every update loop
 def engine(coord:[dict]) -> [dict]:
 
@@ -172,52 +161,94 @@ def engine(coord:[dict]) -> [dict]:
         match coord_dict[(x_coord,y_coord)]:
 
             case "air_block": 
-
                 if (x_coord,y_coord) not in final_coord_dict:
-
-                    pass
-
-            # ----------
-
-            case "sand": 
-
-                if (x_coord,y_coord) not in final_coord_dict:
-
-                    pass
-                
-            # ----------
-
-            case "oil_block": 
-
-                if (x_coord,y_coord) not in final_coord_dict:
-
-                    pass
-
-            # ----------
-
-            case "water_block": 
-
-                if (x_coord,y_coord) not in final_coord_dict:
-
-                    pass
-
-            # ----------
+                    final_coord_dict[(x_coord,y_coord)] = "air_block"
 
             case "building_block": 
+                if (x_coord,y_coord) not in final_coord_dict:
+                    final_coord_dict[(x_coord,y_coord)] = "building_block"
 
+            case "sand_block": 
                 if (x_coord,y_coord) not in final_coord_dict:
 
-                    pass
+                    if not check_bounds((x_coord,y_coord+1)):
+                        final_coord_dict[(x_coord,y_coord)] = "sand_block"
+                    
+                    elif check_bounds((x_coord,y_coord+1)) and coord_dict[(x_coord,y_coord+1)] == "air_block":
+                        final_coord_dict[(x_coord,y_coord)] = "air_block"
+                        final_coord_dict[(x_coord,y_coord+1)] = "sand_block"
+                    elif check_bounds((x_coord+1,y_coord)) and check_bounds((x_coord+1,y_coord+1)) and coord_dict[(x_coord+1,y_coord)] == "air_block" and coord_dict[(x_coord+1,y_coord+1)] == "air_block":
+                        final_coord_dict[(x_coord,y_coord)] = "air_block"
+                        final_coord_dict[(x_coord+1,y_coord)] = "air_block"
+                        final_coord_dict[(x_coord+1,y_coord+1)] = "sand_block"
+                    elif check_bounds((x_coord-1,y_coord+1)) and check_bounds((x_coord-1,y_coord)) and coord_dict[(x_coord-1,y_coord)] == "air_block" and coord_dict[(x_coord-1,y_coord+1)] == "air_block":
+                        final_coord_dict[(x_coord,y_coord)] = "air_block"
+                        final_coord_dict[(x_coord-1,y_coord)] = "air_block"
+                        final_coord_dict[(x_coord-1,y_coord+1)] = "sand_block"
 
-            # ----------
+                    elif check_bounds((x_coord,y_coord+1)) and coord_dict[(x_coord,y_coord+1)] == "water_block":
+                        final_coord_dict[(x_coord,y_coord)] = "water_block"
+                        final_coord_dict[(x_coord,y_coord+1)] = "sand_block"
+                    elif check_bounds((x_coord+1,y_coord)) and check_bounds((x_coord+1,y_coord+1)) and coord_dict[(x_coord+1,y_coord)] == "water_block" and coord_dict[(x_coord+1,y_coord+1)] == "water_block":
+                        final_coord_dict[(x_coord,y_coord)] = "water_block"
+                        final_coord_dict[(x_coord+1,y_coord)] = "water_block"
+                        final_coord_dict[(x_coord+1,y_coord+1)] = "sand_block"
+                    elif check_bounds((x_coord-1,y_coord+1)) and check_bounds((x_coord-1,y_coord)) and coord_dict[(x_coord-1,y_coord+1)] == "water_block" and coord_dict[(x_coord-1,y_coord)] == "water_block":
+                        final_coord_dict[(x_coord,y_coord)] = "water_block"
+                        final_coord_dict[(x_coord-1,y_coord)] = "water_block"
+                        final_coord_dict[(x_coord-1,y_coord+1)] = "sand_block"
 
-            case "effervesence_block": 
-
+                    elif check_bounds((x_coord,y_coord+1)) and coord_dict[(x_coord,y_coord+1)] == "sand_block":
+                        final_coord_dict[(x_coord,y_coord)] = "sand_block"
+                        final_coord_dict[(x_coord,y_coord+1)] = "sand_block"
+                            
+                    elif check_bounds((x_coord,y_coord+1)) and coord_dict[(x_coord,y_coord+1)] == "building_block":
+                        final_coord_dict[(x_coord,y_coord)] = "sand_block"
+                        final_coord_dict[(x_coord,y_coord+1)] = "building_block"
+                        
+                    else:
+                        final_coord_dict[(x_coord,y_coord)] = "sand_block"
+                
+            case "water_block": 
                 if (x_coord,y_coord) not in final_coord_dict:
 
-                    pass
+                    if not check_bounds((x_coord,y_coord+1)):
+                        final_coord_dict[(x_coord,y_coord)] = "water_block"
+                    
+                    elif check_bounds((x_coord,y_coord+1)) and coord_dict[(x_coord,y_coord+1)] == "air_block":
+                        final_coord_dict[(x_coord,y_coord)] = "air_block"
+                        final_coord_dict[(x_coord,y_coord+1)] = "water_block"
+                    elif check_bounds((x_coord+1,y_coord)) and check_bounds((x_coord+1,y_coord+1)) and coord_dict[(x_coord+1,y_coord)] == "air_block" and coord_dict[(x_coord+1,y_coord+1)] == "air_block":
+                        final_coord_dict[(x_coord,y_coord)] = "air_block"
+                        final_coord_dict[(x_coord+1,y_coord)] = "air_block"
+                        final_coord_dict[(x_coord+1,y_coord+1)] = "water_block"
+                    elif check_bounds((x_coord-1,y_coord+1)) and check_bounds((x_coord-1,y_coord)) and coord_dict[(x_coord-1,y_coord)] == "air_block" and coord_dict[(x_coord-1,y_coord+1)] == "air_block":
+                        final_coord_dict[(x_coord,y_coord)] = "air_block"
+                        final_coord_dict[(x_coord-1,y_coord)] = "air_block"
+                        final_coord_dict[(x_coord-1,y_coord+1)] = "water_block"
 
-            # ----------
+                    elif check_bounds((x_coord,y_coord+1)) and coord_dict[(x_coord,y_coord+1)] == "water_block":
+                        final_coord_dict[(x_coord,y_coord)] = "water_block"
+                        final_coord_dict[(x_coord,y_coord+1)] = "water_block"
+                    elif check_bounds((x_coord+1,y_coord)) and check_bounds((x_coord+1,y_coord+1)) and coord_dict[(x_coord+1,y_coord)] == "water_block" and coord_dict[(x_coord+1,y_coord+1)] == "water_block":
+                        final_coord_dict[(x_coord,y_coord)] = "water_block"
+                        final_coord_dict[(x_coord+1,y_coord)] = "water_block"
+                        final_coord_dict[(x_coord+1,y_coord+1)] = "water_block"
+                    elif check_bounds((x_coord-1,y_coord+1)) and check_bounds((x_coord-1,y_coord)) and coord_dict[(x_coord-1,y_coord+1)] == "water_block" and coord_dict[(x_coord-1,y_coord)] == "water_block":
+                        final_coord_dict[(x_coord,y_coord)] = "water_block"
+                        final_coord_dict[(x_coord-1,y_coord)] = "water_block"
+                        final_coord_dict[(x_coord-1,y_coord+1)] = "water_block"
+
+                    elif check_bounds((x_coord,y_coord+1)) and coord_dict[(x_coord,y_coord+1)] == "water_block":
+                        final_coord_dict[(x_coord,y_coord)] = "water_block"
+                        final_coord_dict[(x_coord,y_coord+1)] = "water_block"
+                            
+                    elif check_bounds((x_coord,y_coord+1)) and coord_dict[(x_coord,y_coord+1)] == "building_block":
+                        final_coord_dict[(x_coord,y_coord)] = "water_block"
+                        final_coord_dict[(x_coord,y_coord+1)] = "building_block"
+
+                    else:
+                        final_coord_dict[(x_coord,y_coord)] = "water_block"
 
             case _: 
                 os.system("clear")
