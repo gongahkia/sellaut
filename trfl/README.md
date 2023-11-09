@@ -1,1 +1,0 @@
-implement rules according to [this](https://www.researchgate.net/figure/Cellular-automata-model-of-traffic-flow_fig3_237510279)

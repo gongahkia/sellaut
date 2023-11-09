@@ -17,8 +17,3 @@
 * [particle simulation](prtsim)
 
 [![](https://asciinema.org/a/9AbWRKyI9NJ4aKctTNGbeOlDE.svg)](https://asciinema.org/a/9AbWRKyI9NJ4aKctTNGbeOlDE)
-
-* [epidemic modelling](epdm)
-* [traffic flow modelling](trfl)
-* [sunlight in kowloon walled city](sikc)
-* [snake movement](snek)
