@@ -17,3 +17,13 @@
 * [particle simulation](prtsim)
 
 [![](https://asciinema.org/a/9AbWRKyI9NJ4aKctTNGbeOlDE.svg)](https://asciinema.org/a/9AbWRKyI9NJ4aKctTNGbeOlDE)
+
+## Installation
+
+```console
+$ git clone https://github.com/gongahkia/sellaut
+$ cd sellaut/{relevant folder}/src
+$ python3.11 main.py
+```
+
+> You can create your own `.txt` files for each project.
