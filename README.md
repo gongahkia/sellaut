@@ -18,7 +18,7 @@
 
 [![](https://asciinema.org/a/9AbWRKyI9NJ4aKctTNGbeOlDE.svg)](https://asciinema.org/a/9AbWRKyI9NJ4aKctTNGbeOlDE)
 
-## Installation
+## installation
 
 ```console
 $ git clone https://github.com/gongahkia/sellaut
