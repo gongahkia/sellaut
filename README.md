@@ -4,7 +4,7 @@
 
 ## Stack
 
-* Script: [Python](), [Rust](), [C++]()
+* Script: [Python](https://www.python.org/), [Rust](https://rust-lang.org/), [C++](https://en.wikipedia.org/wiki/C%2B%2B)
 
 ## Usage
 
@@ -23,6 +23,8 @@ $ cd python/trgn/src && python3.11 main.py
 $ cd rust/cnwgol && cargo run
 $ cd rust/wrwrld/src && cargo run
 ```
+
+## Recordings
 
 ### [brian's brain](brbr)
 
