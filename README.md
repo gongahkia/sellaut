@@ -50,12 +50,12 @@ $ cd rust/wrwrld/src && cargo run
 
 ### [langton's ant](lngtant)
 
-[![local cast](casts/lngtant.svg)](casts/lngtant.cast)
+[![asciicast](https://asciinema.org/a/T1IQowuj9XyyotVJ.svg)](https://asciinema.org/a/T1IQowuj9XyyotVJ)
 
 ### [elementary cellular automata](elmrule)
 
-[![local cast](casts/elmrule.svg)](casts/elmrule.cast)
+[![asciicast](https://asciinema.org/a/EN2xbX6gfz5aoYkU.svg)](https://asciinema.org/a/EN2xbX6gfz5aoYkU)
 
 ### [cyclic cellular automaton](cycaut)
 
-[![local cast](casts/cycaut.svg)](casts/cycaut.cast)
+[![asciicast](https://asciinema.org/a/RobIbYdQ0oQHmykV.svg)](https://asciinema.org/a/RobIbYdQ0oQHmykV)
