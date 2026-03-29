@@ -1,3 +1,10 @@
 __pycache__
 .mypy_cache
 .sellaut-log
+*/build/
+.DS_Store
+*.tmp
+rust/cnwgol/target
+rust/wrwrld/target
+rust/bonsai/target
+rust/trngn/target
