@@ -1,4 +1,6 @@
-# `Sell Aut`
+[![](https://img.shields.io/badge/sellaut_v1.0.0-passing-light_green)](https://github.com/gongahkia/sellaut/releases/tag/1.0.0)
+
+# `sellaut`
 
 [Cellular automata](https://en.wikipedia.org/wiki/Cellular_automaton) in the [CLI](https://en.wikipedia.org/wiki/Command-line_interface).
 
